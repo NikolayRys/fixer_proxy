@@ -6,9 +6,10 @@ FIXER_API_URL = 'http://data.fixer.io/api'
 
 get '/' do
   url = "#{request.base_url}/"
-  "Mimics <a href=\"https://fixer.io/documentation\">Fixer API</a>. Access key is not required.
+  "Mimics <a href=\"https://fixer.io/documentation\">Fixer API</a>.
   Available endpoints:<br>#{url}latest<br>#{url}YYYY-MM-DD<br>
-  Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'"
+  Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'<br>
+  Access key is not required and is handled by this proxy."
 end
 
 get '/latest' do
