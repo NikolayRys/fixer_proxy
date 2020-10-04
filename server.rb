@@ -18,8 +18,8 @@ CACHE_DB = connect_to_storage
 
 get '/' do
   url = "#{request.base_url}/"
-  "Proxy for <a href=\"https://fixer.io/documentation\">Fixer API</a><br>.
-  Available endpoint: #{url}YYYY-MM-DD<br>
+  "Proxy for <a href=\"https://fixer.io/documentation\">Fixer API</a>.<br>
+  Endpoint for historical currency rates is available: <a href=\"#{url}2020-10-04\">example.</a><br>
   Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'<br>
   Access key is not required and is handled by this proxy."
 end
