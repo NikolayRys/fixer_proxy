@@ -20,8 +20,11 @@ If not provided, defaults to all known 168 symbols.
 Example:
 `http://localhost:4567/2020-10-04?symbols=USD,AUD,CAD,PLN,MXN`
 
+## Where I have drawn the line
+* I did not implement `timeseries` endpoint because it's not used by the reporter and would extend scope beyond 4 hours.
+* The only supported base currency is EUR, because of API limitations. It's possible to make conversions through EUR.
+
 ## Notes
-* The only supported base currency is EUR, because of API limitations
 * Fixer API key is not required, and is handled by the application.
 * Root URL returns short description with a usage example.
 * EUR symbol is excluded from both HTTP calls and DB storage, since it never changes.
