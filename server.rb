@@ -19,24 +19,22 @@ CACHE_DB = connect_to_storage
 get '/' do
   url = "#{request.base_url}/"
   "Proxy for <a href=\"https://fixer.io/documentation\">Fixer API</a>.<br>
+  Access key is not required and is handled by this proxy.<br>
   Endpoint for historical currency rates is available: <a href=\"#{url}2020-10-04\">example.</a><br>
-  Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'<br>
-  Access key is not required and is handled by this proxy."
+  Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'<br>"
 end
 
 get /\/(\d{4})-(\d{2})-(\d{2})/ do
   date, requested_symbols, with_static = interpret_params(request)
 
   rates_hash = fetch_rates_from_db(requested_symbols, date)
-  rates_hash['EUR'] = 1.0 if with_static
-
   missing_symbols = requested_symbols - rates_hash.keys
-
   if missing_symbols.any?
     new_rates_hash = fetch_rates_from_fixer("/#{date}", symbols: missing_symbols.join(','))
     record_new_rates_to_db(new_rates_hash, date)
     rates_hash.merge!(new_rates_hash)
   end
+  rates_hash['EUR'] = 1.0 if with_static
 
   mimic_fixer_json(rates_hash, date)
 end
@@ -71,9 +69,11 @@ def fetch_rates_from_fixer(endpoint, params)
   response.fetch('rates', {})
 end
 
-def fetch_rates_from_db(symbols, date)
-  symbols_query = symbols.map{|symbol| "'#{symbol}'"}.join(',')
-  CACHE_DB.execute("SELECT symbol, rate FROM quotations WHERE date='#{date}' AND symbol IN (#{symbols_query})").to_h
+def fetch_rates_from_db(requested_symbols, date)
+  symbols_query = requested_symbols.map{|symbol| "'#{symbol}'"}.join(',')
+  local_rates = CACHE_DB.execute("SELECT symbol, rate FROM quotations WHERE date='#{date}' AND symbol IN (#{symbols_query})").to_h
+  puts "***Found #{local_rates.size} symbols locally out of #{requested_symbols.size}***"
+  local_rates
 end
 
 def record_new_rates_to_db(rates_hash, date)
