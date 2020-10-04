@@ -2,7 +2,7 @@ require 'sinatra'
 require 'dotenv/load'
 require 'httparty'
 
-FIXER_API_URL = 'http://data.fixer.io/api/'
+FIXER_API_URL = 'http://data.fixer.io/api'
 
 get '/' do
   url = "#{request.base_url}/"
@@ -11,23 +11,11 @@ get '/' do
 end
 
 get '/latest' do
-  get_from_fixer('latest').to_s
+  get_from_fixer(request.path).to_s
 end
 
-get '/YYYY-MM-DD' do
-  # ^(\d{4})-(\d{2})-(\d{2})
-end
-
-get '/convert' do
-
-end
-
-get '/timeseries' do
-
-end
-
-get '/fluctuation' do
-
+get /\/(\d{4})-(\d{2})-(\d{2})/ do
+  get_from_fixer(request.path, request.params).to_s
 end
 
 def get_from_fixer(endpoint, params={})
