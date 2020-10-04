@@ -62,7 +62,7 @@ def interpret_params(request)
     with_static = true
   end
 
-   [date, requested_symbols, with_static]
+  [date, requested_symbols, with_static]
 end
 
 def fetch_rates_from_fixer(endpoint, params)
