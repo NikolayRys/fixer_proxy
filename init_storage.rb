@@ -9,7 +9,7 @@ db = SQLite3::Database.new(STORAGE_FILE_NAME)
 # Create a table
 rows = db.execute <<-SQL
   CREATE TABLE euro_quotations (
-    currency TEXT,
+    symbol TEXT,
     date TEXT,
     ratio FLOAT
   );
