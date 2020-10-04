@@ -21,6 +21,7 @@ Example:
 `http://localhost:4567/2020-10-04?symbols=USD,AUD,CAD,PLN,MXN`
 
 ## Notes
+* The only supported base currency is EUR, because of API limitations
 * Fixer API key is not required, and is handled by the appication.
 * Root URL returns short description with a usage example.
 * EUR symbol is excluded from both HTTP calls and DB storage, since it never changes.
