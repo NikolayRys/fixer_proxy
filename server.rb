@@ -7,18 +7,19 @@ FIXER_API_URL = 'http://data.fixer.io/api'
 get '/' do
   url = "#{request.base_url}/"
   "Mimics <a href=\"https://fixer.io/documentation\">Fixer API</a>. Access key is not required.
-  Supported endpoints:<br>#{url}latest<br>#{url}YYYY-MM-DD<br>#{url}convert<br>#{url}timeseries<br>#{url}fluctuation"
+  Available endpoints:<br>#{url}latest<br>#{url}YYYY-MM-DD<br>
+  Supported param: '&symbols = USD,AUD,CAD,PLN,MXN'"
 end
 
 get '/latest' do
-  get_from_fixer(request.path).to_s
+  get_from_fixer(request.path, request.params).to_s
 end
 
 get /\/(\d{4})-(\d{2})-(\d{2})/ do
   get_from_fixer(request.path, request.params).to_s
 end
 
-def get_from_fixer(endpoint, params={})
+def get_from_fixer(endpoint, params)
   params[:access_key] = ENV['FIXER_ACCESS_KEY']
   HTTParty.get("#{FIXER_API_URL}#{endpoint}", query: params)
 end
