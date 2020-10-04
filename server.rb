@@ -33,9 +33,9 @@ get /\/(\d{4})-(\d{2})-(\d{2})/ do
   missing_symbols = requested_symbols - rates_hash.keys
 
   if missing_symbols.any?
-    rates_from_http = fetch_rates_from_fixer("/#{date}", symbols: missing_symbols.join(','))
-    add_new_rates_to_db(rates_from_http, date)
-    rates_hash.merge!(rates_from_http)
+    new_rates_hash = fetch_rates_from_fixer("/#{date}", symbols: missing_symbols.join(','))
+    record_new_rates_to_db(new_rates_hash, date)
+    rates_hash.merge!(new_rates_hash)
   end
 
   mimic_fixer_json(rates_hash, date)
@@ -76,6 +76,6 @@ def fetch_rates_from_db(symbols, date)
   CACHE_DB.execute("SELECT symbol, rate FROM quotations WHERE date='#{date}' AND symbol IN (#{symbols_query})").to_h
 end
 
-def add_new_rates_to_db(rates_hash, date)
+def record_new_rates_to_db(rates_hash, date)
   rates_hash.each { |symbol, rate| CACHE_DB.execute("INSERT INTO quotations VALUES ('#{symbol}', '#{date}', #{rate})") }
 end
