@@ -9,7 +9,7 @@ def connect_to_storage
     CREATE TABLE IF NOT EXISTS quotations (
       symbol TEXT,
       date TEXT,
-      ratio FLOAT,
+      rate FLOAT,
       UNIQUE(symbol, date)
     );
   SQL
