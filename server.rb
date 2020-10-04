@@ -4,7 +4,7 @@ require 'httparty'
 
 FIXER_API_URL = 'http://data.fixer.io/api'.freeze
 
-STATIC_SYMBOL = 'EUR'.freeze
+STATIC_SYMBOL = 'EUR'.freeze # Euro-to-euro doesn't change, so we don't need to send or store it
 
 SYMBOLS = %w[AED AFN ALL AMD ANG AOA ARS AUD AWG AZN BAM BBD BDT BGN BHD BIF BMD BND BOB BRL BSD BTC BTN BWP BYN BYR
 BZD CAD CDF CHF CLF CLP CNY COP CRC CUC CUP CVE CZK DJF DKK DOP DZD EGP ERN ETB EUR FJD FKP GBP GEL GGP GHS GIP GMD GNF
