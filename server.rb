@@ -30,7 +30,7 @@ get /\/(\d{4})-(\d{2})-(\d{2})/ do
   rates_hash = fetch_rates_from_db(requested_symbols, date)
   rates_hash['EUR'] = 1.0 if with_static
 
-  missing_symbols = requested_symbols - rates_hash.map(&:keys)
+  missing_symbols = requested_symbols - rates_hash.keys
 
   if missing_symbols.any?
     rates_from_http = fetch_rates_from_fixer("/#{date}", symbols: missing_symbols.join(','))
@@ -48,7 +48,7 @@ def mimic_fixer_json(rates_hash, date)
     historical: true,
     base: STATIC_SYMBOL,
     date: date,
-    rates: rates_hash
+    rates: rates_hash.sort.to_h
   }.to_json
 end
 
