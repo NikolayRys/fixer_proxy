@@ -4,11 +4,12 @@
 Microservice that proxies Fixer API endpoint for historical currency conversion rates.
 
 ## To start up
+Make sure that a recent Ruby version is installed(tested on 2.6.x).
 ```
 bundle install
 ruby server.rb
 ```
-It starts at default Sinatra port `http://localhost:4567/`
+It starts server on default Sinatra port `http://localhost:4567/`
 
 ## Usage
 Endpoint that mimics [Fixer API Historic endpoint](https://fixer.io/documentation).
@@ -20,7 +21,8 @@ Example:
 `http://localhost:4567/2020-10-04?symbols=USD,AUD,CAD,PLN,MXN`
 
 ## Notes
+* Fixer API key is not required, and is handled by the appication.
 * Root URL returns short description with a usage example.
 * EUR symbol is excluded from both HTTP calls and DB storage, since it never changes.
 * Amount of cache hits is logged to console.
-* To reset DB: `rm cache.db`
+* To reset local DB: `rm cache.db`
