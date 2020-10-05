@@ -1,11 +1,11 @@
-# Test task for Freska
-
-## Description
+# Fixer Proxy
+Test task for Freska.
 Microservice that proxies Fixer API endpoint for historical currency conversion rates.
 
 ## To start up
 Make sure that a recent Ruby version is installed(tested on 2.6.x).
 ```
+git clone git@github.com:NikolayRys/fixer_proxy.git && cd fixer_proxy
 bundle install
 ruby server.rb
 ```
@@ -24,7 +24,12 @@ Example:
 * I did not implement `timeseries` endpoint because it's not used by the reporter and would extend scope beyond 4 hours.
 * The only supported base currency is EUR, because of API limitations. It's possible to make conversions through EUR.
 
+What else I would have done if I had more time:
+* Add tests
+* Dockerize both services and add orchestration as docker-compose
+
 ## Notes
+* Related repo: https://github.com/NikolayRys/delta_reporter
 * Fixer API key is not required, and is handled by the application.
 * Root URL returns short description with a usage example.
 * EUR symbol is excluded from both HTTP calls and DB storage, since it never changes.
