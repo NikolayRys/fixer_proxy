@@ -1,9 +1,10 @@
 require 'sinatra'
-require 'dotenv/load'
 require 'httparty'
 require_relative 'connect_to_storage'
 
 FIXER_API_URL = 'http://data.fixer.io/api'.freeze
+
+FIXER_ACCESS_KEY = '2c471a7a78dfc3b90c813189c7a63b7f' # Assuming these are configured on each server and are not commited to repo
 
 STATIC_SYMBOL = 'EUR'.freeze # Euro-to-euro doesn't change, so we don't send nor store it
 
@@ -29,10 +30,14 @@ get /\/(\d{4})-(\d{2})-(\d{2})/ do
 
   rates_hash = fetch_rates_from_db(requested_symbols, date)
   missing_symbols = requested_symbols - rates_hash.keys
+
   if missing_symbols.any?
-    new_rates_hash = fetch_rates_from_fixer("/#{date}", symbols: missing_symbols.join(','))
+    puts "*** Haven't found #{missing_symbols.size} symbols locally, sending API request ***"
+    new_rates_hash = fetch_rates_from_fixer("/#{date}", missing_symbols)
     record_new_rates_to_db(new_rates_hash, date)
     rates_hash.merge!(new_rates_hash)
+  else
+    puts "*** All symbols found locally, not sending API request ***"
   end
   rates_hash['EUR'] = 1.0 if with_static
 
@@ -40,6 +45,7 @@ get /\/(\d{4})-(\d{2})-(\d{2})/ do
 end
 
 def mimic_fixer_json(rates_hash, date)
+  content_type 'application/json'
   {
     success: true,
     timestamp: Time.now.to_i,
@@ -52,7 +58,8 @@ end
 
 def interpret_params(request)
   date = request.path.delete_prefix('/')
-  if (symbols_str = request.params['symbols'])
+  if (raw_symbols_str = request.params['symbols'])
+    symbols_str = CGI.unescape(raw_symbols_str)
     requested_symbols = symbols_str.split(',')
     with_static = !!requested_symbols.delete(STATIC_SYMBOL)
   else
@@ -63,17 +70,14 @@ def interpret_params(request)
   [date, requested_symbols, with_static]
 end
 
-def fetch_rates_from_fixer(endpoint, params)
-  params[:access_key] = ENV['FIXER_ACCESS_KEY']
-  response = HTTParty.get("#{FIXER_API_URL}#{endpoint}", query: params)
+def fetch_rates_from_fixer(endpoint, symbols)
+  response = HTTParty.get("#{FIXER_API_URL}#{endpoint}", query: {access_key: FIXER_ACCESS_KEY, symbols: symbols.join(',')})
   response.fetch('rates', {})
 end
 
 def fetch_rates_from_db(requested_symbols, date)
   symbols_query = requested_symbols.map{|symbol| "'#{symbol}'"}.join(',')
-  local_rates = CACHE_DB.execute("SELECT symbol, rate FROM quotations WHERE date='#{date}' AND symbol IN (#{symbols_query})").to_h
-  puts "***Found #{local_rates.size} symbols locally out of #{requested_symbols.size}***"
-  local_rates
+  CACHE_DB.execute("SELECT symbol, rate FROM quotations WHERE date='#{date}' AND symbol IN (#{symbols_query})").to_h
 end
 
 def record_new_rates_to_db(rates_hash, date)
